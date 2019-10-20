@@ -40,8 +40,9 @@ using namespace cv;
 
 
 
-int process(pcl::PointCloud<pcl::PointXYZ>::Ptr origin_cloud)
+std::vector<float> process(pcl::PointCloud<pcl::PointXYZ>::Ptr origin_cloud)
 {
+	std::vector<float> defect(7, 0.0);
 	// string paraFileName = "../parameters/parameter.yml";
 	// Config::setParameterFile(paraFileName);
 
@@ -128,7 +129,7 @@ int process(pcl::PointCloud<pcl::PointXYZ>::Ptr origin_cloud)
 		//执行滤波
 
 		cv::Mat cv_R = getR2registeZ(cloud_filtered);
-		Eigen::Matrix4f tf;
+		// Eigen::Matrix4f tf;
 		for (int i = 0; i < 3; ++i)
 		{
 			for (int j = 0; j < 3; ++j)
@@ -453,8 +454,16 @@ int process(pcl::PointCloud<pcl::PointXYZ>::Ptr origin_cloud)
 				<<avg_normal_estimation_area.normal_y<<" "
 				<<avg_normal_estimation_area.normal_z<<std::endl;
 
-
-
+				if (defect[6] < cloudCPn->points.size())
+				{
+					defect[0]=xc;
+					defect[1]=yc;
+					defect[2]=zc;
+					defect[3]=avg_normal_estimation_area.normal_x;
+					defect[4]=avg_normal_estimation_area.normal_y;
+					defect[5]=avg_normal_estimation_area.normal_z;
+					defect[6]=cloudCPn->points.size();
+				}
 				pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered_CPn(new pcl::PointCloud<pcl::PointXYZ>);
 				pcl::PassThrough<pcl::PointXYZ> pass;
 				pass.setInputCloud (cloud);
@@ -550,5 +559,29 @@ int process(pcl::PointCloud<pcl::PointXYZ>::Ptr origin_cloud)
 			boost::this_thread::sleep(boost::posix_time::microseconds(100));
 		}
 	}
-	return 0;
+	
+	for (int i = 0; i < defect.size(); ++i)
+	{
+		std::cout<<defect[i]<<std::endl;
+	}
+	
+	std::cout<<"tf Matrix4f:\n"<<tf<<std::endl;
+    Eigen::Matrix<float, 3, 1> pt (defect[0], defect[1], defect[2]);
+    defect[0] = (tf (0, 0) * pt(0) + tf (0, 1) * pt(1) + tf (0, 2) * pt(2) + tf (0, 3));
+    defect[1] = (tf (1, 0) * pt(0) + tf (1, 1) * pt(1) + tf (1, 2) * pt(2) + tf (1, 3));
+    defect[2] = (tf (2, 0) * pt(0) + tf (2, 1) * pt(1) + tf (2, 2) * pt(2) + tf (2, 3));
+
+    pt(0)= defect[3];
+    pt(1)= defect[4];
+    pt(2)= defect[5];
+    defect[3] = (tf (0, 0) * pt(0) + tf (0, 1) * pt(1) + tf (0, 2) * pt(2) + tf (0, 3));
+    defect[4] = (tf (1, 0) * pt(0) + tf (1, 1) * pt(1) + tf (1, 2) * pt(2) + tf (1, 3));
+    defect[5] = (tf (2, 0) * pt(0) + tf (2, 1) * pt(1) + tf (2, 2) * pt(2) + tf (2, 3));
+
+	for (int i = 0; i < defect.size(); ++i)
+	{
+		std::cout<<defect[i]<<std::endl;
+	}
+
+	return defect;
 }

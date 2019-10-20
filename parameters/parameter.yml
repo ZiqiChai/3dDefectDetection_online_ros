@@ -29,10 +29,10 @@ VoxelGrid_z: 0.4  #mm
 PASS_filter: 1
 PASS_filter_x: "x"
 PASS_filter_y: "y"
-PASS_filter_x_min: -20 #mm
-PASS_filter_x_max: 20  #mm
-PASS_filter_y_min: -20 #mm
-PASS_filter_y_max: 20  #mm
+PASS_filter_x_min: -40 #mm
+PASS_filter_x_max: 40  #mm
+PASS_filter_y_min: -40 #mm
+PASS_filter_y_max: 40  #mm
 
 
 

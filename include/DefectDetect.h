@@ -38,5 +38,5 @@ using namespace cv;
 #ifndef pi
 #define pi 3.1415926535897932384626433832795028841971693993751058209749445
 #endif
-int process(pcl::PointCloud<pcl::PointXYZ>::Ptr origin_cloud);
+std::vector<float> process(pcl::PointCloud<pcl::PointXYZ>::Ptr origin_cloud);
 #endif

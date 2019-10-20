@@ -65,7 +65,11 @@ int main(int argc, char **argv)
 	viewer->close();
 	device.stop();
 
-	process(cloud);
+	std::vector<float> res=process(cloud);
+	for (int i = 0; i < res.size(); ++i)
+	{
+		std::cout<<res[i]<<std::endl;
+	}
 
 	return 0;
 }
